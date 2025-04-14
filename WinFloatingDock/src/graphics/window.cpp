@@ -4,9 +4,8 @@ HWND g_hWnd = NULL;
 int g_hoveredIconIndex = -1;
 int g_focusedIconIndex = -1;
 RECT g_iconAreaRect = { 0 };
-std::vector<RECT> g_iconRects;
+std::vector<std::pair<RECT, int>> g_iconGUIRecords;
 RECT g_dragHandleRect = { 0 };
-bool g_isDragging = false;
 RECT g_clockRect = { 0 };
 
 void Draw(HDC hdc, const std::vector<WindowInfo>& windows, const RECT& updateRect) {
@@ -86,7 +85,7 @@ void DrawHandle(HDC hdc, RECT& clientRect, long startingX, long* endingX) {
 }
 
 void DrawIcons(HDC hdc, const std::vector<WindowInfo>& windows, RECT& clientRect, long startingX, long* endingX) {
-    std::vector<RECT> newRects = {};
+    std::vector<std::pair<RECT, int>> newRects = {};
     int x = 12 + startingX;
     int iconSize = 32;
     int iconPadding = 14;
@@ -98,24 +97,28 @@ void DrawIcons(HDC hdc, const std::vector<WindowInfo>& windows, RECT& clientRect
     g_iconAreaRect.top = 4;       // Top of icon area
     g_iconAreaRect.bottom = 10 + iconSize + 6; // Bottom of icon area with padding
 
-    for (size_t i = 0; i < windows.size(); ++i) {
+    auto totalsize = windows.size();
+    int internal_hovered_idx = g_hoveredIconIndex < 0 ? -1 : totalsize -1 - g_hoveredIconIndex;
+
+    // Decrement just after the check (i.e. if i is 1, it passes; decrement to 0; for loop dies next check)
+    for (size_t i = totalsize; i-- > 0; ) {
         RECT iconRect = { x, 10, x + iconSize, 10 + iconSize };
         RECT iconBgRect = { iconRect.left - 6, iconRect.top - 6, iconRect.right + 6, iconRect.bottom + 6 };
-        if ((int)i == g_hoveredIconIndex) {
+        if ((int)i == internal_hovered_idx) {
             HBRUSH hoverBrush = CreateSolidBrush(RGB(58, 58, 58));
             SelectObject(hdc, hoverBrush);
             RoundRect(hdc, iconBgRect.left, iconBgRect.top,
                 iconBgRect.right, iconBgRect.bottom, 12, 12);
             DeleteObject(hoverBrush);
         }
-        newRects.push_back(iconBgRect);
+        newRects.push_back(std::pair<RECT, int>(iconBgRect, i));
         DrawIconEx(hdc, x, 10, windows[i].hIcon, iconSize, iconSize, 0, NULL, DI_NORMAL);
         x += iconSize + iconPadding;
     }
 
     // Update the right edge of the icon area
     g_iconAreaRect.right = x;
-    g_iconRects = std::move(newRects);
+    g_iconGUIRecords = std::move(newRects);
 
     DeleteObject(handlePen);
     if (endingX != nullptr) {
@@ -123,14 +126,14 @@ void DrawIcons(HDC hdc, const std::vector<WindowInfo>& windows, RECT& clientRect
     }
 }
 
-void DrawIcon(HDC hdc, const WindowInfo& window, const RECT& iconRect) {
+void DrawIcon(HDC hdc, const WindowInfo& window, const RECT& iconRect, bool isHovered) {
     // Extract the icon area from the surrounding background rect
     int iconSize = 32;
     int iconX = (iconRect.left + iconRect.right - iconSize) / 2;
     int iconY = (iconRect.top + iconRect.bottom - iconSize) / 2;
 
     // Draw the background if this is the hovered icon
-    if (&iconRect - &g_iconRects[0] == g_hoveredIconIndex) {
+    if (isHovered) {
         HBRUSH hoverBrush = CreateSolidBrush(RGB(58, 58, 58));
         HPEN hoverPen = CreatePen(PS_SOLID, 0, RGB(58, 58, 58));
         SelectObject(hdc, hoverBrush);
@@ -185,19 +188,5 @@ void DrawClock(HDC hdc, RECT& clientRect, long startingX, long* endingX) {
 
     if (endingX != nullptr) {
         *endingX = clockRect.right;
-    }
-}
-
-// To handle clicks and activate windows:
-void ActivateWindowFromTaskbar(int index, const std::vector<WindowInfo>& windows) {
-    if (index >= 0 && index < windows.size()) {
-        HWND hwnd = windows[index].hwnd;
-
-        // If minimized, restore it
-        if (IsIconic(hwnd))
-            ShowWindow(hwnd, SW_RESTORE);
-
-        // Bring to front
-        SetForegroundWindow(hwnd);
     }
 }

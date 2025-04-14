@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\debug\windowdbg.h" />
     <ClInclude Include="src\resources\framework.h" />
     <ClInclude Include="src\graphics\iconutil.h" />
     <ClInclude Include="src\hook\keyboardhook.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="src\manager\manager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\debug\windowdbg.cpp" />
     <ClCompile Include="src\graphics\iconutil.cpp" />
     <ClCompile Include="src\hook\keyboardhook.cpp" />
     <ClCompile Include="src\graphics\redrawhelper.cpp" />

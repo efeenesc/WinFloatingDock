@@ -1,16 +1,23 @@
 #pragma once
 
-#include <windows.h>;
-#include <string>;
-#include <psapi.h>;
-#include <iostream>;
-#include <sstream>;
-#include <iomanip>;
-#include "../manager/manager.h";
-#include "../graphics/redrawhelper.h";
+#include <windows.h>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include "../manager/manager.h"
+#include "../graphics/redrawhelper.h"
 
-std::wstring GetProcessNameFromWindow(HWND hwnd);
-void PrintWindowInfo(HWND hwnd, const char* eventType);
+// Foreground window hook. This is fired when a window becomes the foreground window (i.e. is focused)
+extern HWINEVENTHOOK g_hook_SystemForeground;
+// Window show hook. This is fired when a window is shown or created.
+extern HWINEVENTHOOK g_hook_ObjectShow;
+// Window hide hook. This is fired when a window is hid or destroyed.
+extern HWINEVENTHOOK g_hook_ObjectHide;
+
+/**
+ * @brief Callback for the window tracking related functions
+ */
 void CALLBACK WinEventProc(
     HWINEVENTHOOK hWinEventHook,
     DWORD event,
@@ -20,5 +27,15 @@ void CALLBACK WinEventProc(
     DWORD idEventThread,
     DWORD dwmsEventTime
 );
-bool InitHooks();
+
+/**
+ * @brief Starts window tracking hooks. Can be configured to throw an error if any of the hooks cannot be initialized.
+ * @param ThrowIfFails Defaults to true. If hook initialization fails, throws an error.
+ * @returns True if successful, false if not
+ */
+BOOL InitHooks(BOOL ThrowIfFails = TRUE);
+
+/**
+ * @brief Kills window tracking hooks. Use for cleanup before terminating program.
+ */
 void KillHooks();

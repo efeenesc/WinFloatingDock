@@ -14,6 +14,16 @@
 
 #pragma comment (lib, "Dwmapi")
 
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+/**
+ * @brief Registers class for this program instance's window, sets WndProc to run, sets bg color, etc.
+ */
+ATOM RegisterProgramClass(HINSTANCE hInstance);
+
+/**
+ * @brief Initializes current instance by saving instance handle and creating main window
+ */
+BOOL InitInstance(HINSTANCE, int);
+/**
+ * @brief Handles painting, registering mouse clicks and hover for drag handle and icons
+ */
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

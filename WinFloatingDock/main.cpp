@@ -1,19 +1,12 @@
-// main.cpp : Defines the entry point for the application.
-//
-
 #include "main.h"
 
 #define MAX_LOADSTRING 100
 
-// Global Variables:
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING] = L"";                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-static bool isMouseInWindow = false;
-UINT_PTR g_timerID = 100;
-
-// Forward declarations of functions included in this code module:
-
+HINSTANCE hInst;                                        // Current instance
+WCHAR szTitle[MAX_LOADSTRING] = L"Floating Dock";       // Title bar text
+WCHAR szWindowClass[MAX_LOADSTRING];                    // Main window class name
+static bool isMouseInWindow = false;                    // Whether mouse is in window. This might need to be moved to window.h
+UINT_PTR g_timerID = 100;                               // 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -23,54 +16,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
-
-    // Initialize global strings
-    //LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_WINDOWSPROJECT1, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    RegisterProgramClass(hInstance);
 
-    // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
-    {
         return FALSE;
-    }
 
     if (!InitHooks())
-    {
         return FALSE;
-    }
 
     if (!InitKeyboardHook())
-    {
         return FALSE;
-    }
-
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWSPROJECT1));
-
-    MSG msg;
 
     // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+    MSG msg;
+    while (GetMessage(&msg, nullptr, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
 
     return (int) msg.wParam;
 }
 
-
-
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
+ATOM RegisterProgramClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
 
@@ -83,7 +51,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWSPROJECT1));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = CreateSolidBrush(RGB(51, 51, 51));
+    wcex.hbrBackground  = CreateSolidBrush(RGB(51, 51, 51));
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_WINDOWSPROJECT1);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -91,26 +59,27 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     GetRunningWindowsInfo();
     hInst = hInstance; // Store instance handle in our global variable
 
-    g_hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_LAYERED, szWindowClass, szTitle, WS_VISIBLE | WS_POPUP | WS_BORDER,
-        50, 50, 400, 55, nullptr, nullptr, hInstance, nullptr);
+    g_hWnd = CreateWindowExW(
+        WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_LAYERED, 
+        szWindowClass, 
+        szTitle, 
+        WS_VISIBLE | WS_POPUP | WS_BORDER,
+        50, // X pos
+        50, // Y pos
+        400, // width
+        55, // height
+        nullptr, // parent hWnd
+        nullptr, // menu hWnd
+        hInstance, 
+        nullptr
+    );
 
-    if (!g_hWnd)
-    {
+    if (!g_hWnd) {
         return FALSE;
     }
 
@@ -122,16 +91,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     return TRUE;
 }
 
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE: Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -140,9 +99,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (hWnd) {
             DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_ROUND;
             DwmSetWindowAttribute(hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, &preference, sizeof(preference));
-
-            bool fuck = true;
-            DwmSetWindowAttribute(hWnd, DWMWA_USE_HOSTBACKDROPBRUSH, &fuck, sizeof BOOL);
         }
         break;
     }
@@ -176,13 +132,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             return 0;
         }
         else {
-            for (size_t i = 0; i < g_iconRects.size(); i++) {
-                if (PtInRect(&g_iconRects[i], pnt)) {
-                    if (!g_windows[i].hwnd) {
+            for (size_t i = 0; i < g_iconGUIRecords.size(); i++) {
+                if (PtInRect(&g_iconGUIRecords[i].first, pnt)) {
+                    int iconIdx = g_iconGUIRecords[i].second; // Icon index in g_windows differs from the GUI/user visible index of icons
+                    // This is because g_windows' contents are drawn in reverse
+
+                    if (!g_windows[iconIdx].hwnd) {
                         break;
                     }
 
-                    SetForegroundWindow(g_windows[i].hwnd);
+                    ActivateWindowFromTaskbar(iconIdx);
                 }
             }
         }
@@ -198,15 +157,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int prevHover = g_hoveredIconIndex;
         g_hoveredIconIndex = -1;
 
-        for (size_t i = 0; i < g_iconRects.size(); ++i) {
-            if (PtInRect(&g_iconRects[i], pt)) {
+        for (size_t i = 0; i < g_iconGUIRecords.size(); ++i) {
+            if (PtInRect(&g_iconGUIRecords[i].first, pt)) {
                 g_hoveredIconIndex = (int)i;
-                InvalidateIcon(g_iconRects[i]);
+                InvalidateIcon(g_iconGUIRecords[i].first);
             }
         }
 
         if (prevHover != g_hoveredIconIndex && prevHover != -1) {
-            InvalidateIcon(g_iconRects[prevHover]);
+            InvalidateIcon(g_iconGUIRecords[prevHover].first);
         }
 
         if (!wasInWindow) {

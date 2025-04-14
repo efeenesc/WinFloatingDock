@@ -8,6 +8,7 @@
     <ClCompile Include="src\graphics\window.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\manager\manager.cpp" />
+    <ClCompile Include="src\debug\windowdbg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\resources\framework.h" />
@@ -21,6 +22,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="src\manager\manager.h" />
     <ClInclude Include="src\manager\windowinfo.h" />
+    <ClInclude Include="src\debug\windowdbg.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="main.rc" />
