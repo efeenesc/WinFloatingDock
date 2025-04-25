@@ -1,15 +1,15 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by WindowsProject1.rc
+// Used by main.rc
 //
 #define IDC_MYICON                      2
-#define IDD_WINDOWSPROJECT1_DIALOG      102
+#define IDD_WINFLOATINGDOCK_DIALOG      102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
-#define IDI_WINDOWSPROJECT1             107
+#define IDI_WINFLOATINGDOCK             107
 #define IDI_SMALL                       108
-#define IDC_WINDOWSPROJECT1             109
+#define IDC_WINFLOATINGDOCK             109
 #define IDR_MAINFRAME                   128
 #define IDC_STATIC                      -1
 

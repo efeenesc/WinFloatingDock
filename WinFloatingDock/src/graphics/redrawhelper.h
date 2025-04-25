@@ -1,8 +1,13 @@
 #pragma once
 
-#include "window.h";
+#include "window.h"
 
-void InvalidateDragHandle();
-void InvalidateClock();
-void InvalidateIcons();
-void InvalidateIcon(RECT& iconRect);
+namespace WinFloatingDock {
+
+	namespace graphics {
+		void InvalidateDragHandle();
+		void InvalidateClock();
+		void InvalidateIcons();
+		void InvalidateIcon(RECT& iconRect);
+	}
+}

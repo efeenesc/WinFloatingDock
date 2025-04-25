@@ -6,21 +6,26 @@
 #include <vector>
 #include "../manager/manager.h"
 
-/**
- * @brief Hook assigned by InitKeyboardHook, MainKeyboardProc
- */
-extern HHOOK g_KeyboardHook;
+namespace WinFloatingDock {
+	namespace hook {
 
-/**
- * @brief Low-level keyboard hook callback procedure hooked by InitKeyboardHook of type HOOKPROC
- */
-LRESULT CALLBACK MainKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+		/**
+		 * @brief Hook assigned by InitKeyboardHook, MainKeyboardProc
+		 */
+		extern HHOOK g_KeyboardHook;
 
-/**
- * @brief Initializes low-level keyboard hook with MainKeyboardProc callback HOOKPROC
- * 
- * This has to initialize a low-level hook to get global access to keyboard input.
- * 
- * @return TRUE if hook initialized without errors; FALSE otherwise
- */
-BOOL InitKeyboardHook();
+		/**
+		 * @brief Low-level keyboard hook callback procedure hooked by InitKeyboardHook of type HOOKPROC
+		 */
+		LRESULT CALLBACK MainKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+
+		/**
+		 * @brief Initializes low-level keyboard hook with MainKeyboardProc callback HOOKPROC
+		 *
+		 * This has to initialize a low-level hook to get global access to keyboard input.
+		 *
+		 * @return TRUE if hook initialized without errors; FALSE otherwise
+		 */
+		BOOL InitKeyboardHook();
+	}
+}

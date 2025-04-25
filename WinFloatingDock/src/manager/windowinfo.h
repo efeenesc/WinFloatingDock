@@ -2,8 +2,13 @@
 #include <wtypes.h>
 #include <string>
 
-typedef struct WindowInfo {
-    HWND hwnd;
-    HICON hIcon;
-    std::wstring title;
-} WindowInfo;
+namespace WinFloatingDock {
+    namespace manager {
+
+        typedef struct WindowInfo {
+            HWND hwnd;
+            HICON hIcon;
+            std::wstring title;
+        } WindowInfo;
+    }
+}

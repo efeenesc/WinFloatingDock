@@ -9,6 +9,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\manager\manager.cpp" />
     <ClCompile Include="src\debug\windowdbg.cpp" />
+    <ClCompile Include="src\shell\shellicon.cpp" />
+    <ClCompile Include="src\timer\basictimer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\resources\framework.h" />
@@ -23,6 +25,8 @@
     <ClInclude Include="src\manager\manager.h" />
     <ClInclude Include="src\manager\windowinfo.h" />
     <ClInclude Include="src\debug\windowdbg.h" />
+    <ClInclude Include="src\shell\shellicon.h" />
+    <ClInclude Include="src\timer\basictimer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="main.rc" />
