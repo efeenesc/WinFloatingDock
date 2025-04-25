@@ -72,6 +72,10 @@ namespace debug {
         LONG style = GetWindowLong(hwnd, GWL_STYLE);
         LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
 
+        // Get window placement info
+        WINDOWPLACEMENT placement = { sizeof(WINDOWPLACEMENT) };
+        GetWindowPlacement(hwnd, &placement);
+
         // Get process and thread ID
         DWORD processId = 0;
         DWORD threadId = GetWindowThreadProcessId(hwnd, &processId);
